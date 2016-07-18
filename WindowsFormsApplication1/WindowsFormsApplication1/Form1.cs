@@ -9,13 +9,13 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.IO.Ports;
 using System.Threading;
+using System.Globalization;
 
 
 
 
 namespace WindowsFormsApplication1
 {
-
     public partial class Form1 : Form
     {
 
@@ -39,7 +39,6 @@ namespace WindowsFormsApplication1
         delegate void Display(byte[] buffer);
         private Boolean receiving;
         private Thread t;
-
         private void DisplayText(byte[] buffer)
         {
             textBox2.Clear();
@@ -100,7 +99,7 @@ namespace WindowsFormsApplication1
             }
         }
 
-        private void button4_Click(object sender, EventArgs e)
+        private void button4_Click(object sender, EventArgs e)        /*close port*/
         {
             serialPort1.Close();
             progressBar1.Value = 0;
@@ -111,9 +110,8 @@ namespace WindowsFormsApplication1
             button4.Enabled = false;
             button5.Enabled = false;
             button6.Enabled = false;
-            t.IsBackground = false;
             t.Abort();
-        }             /*close port*/
+        }    
 
         private void textBox1_TextChanged_1(object sender, EventArgs e)
         {
@@ -174,12 +172,73 @@ namespace WindowsFormsApplication1
             textBox1.Text = "";
         }
 
-        private void button6_Click(object sender, EventArgs e)
+        private void button6_Click(object sender, EventArgs e)       /*Send Data*/
         {
-            byte[] Commend = { 0x03, 0x02, 0xAA, 0xFF };
+            byte[] Commend = new byte[1024];
+            if (radioButton1.Checked) /*read as ASCII*/
+            {
+                byte[] Data = Encoding.ASCII.GetBytes(textBox1.Text);
+                int lens = 0;
+                lens += textBox1.TextLength;
+                Commend[0] = 0x03;
+                Commend[1] = Convert.ToByte(lens);
+                Array.Resize(ref Commend, lens + 2);
+                int i = 2;
+                foreach (byte element in Data)
+                {
+                    //Console.WriteLine("{0} = {1}", element, (char)element); //check data on console
+                    Commend[i] = element;
+                    i++;
+                }
+            }
+            if (radioButton2.Checked) /*read as HEX*/
+            {
+                byte[] Data = StringToByteArray(textBox1.Text);
+                int lens = 0;
+                lens += Data.Length;
+                if (lens <=128) /*lens more than 128 will be failure array*/
+                {
+                    Commend[0] = 0x03;
+                    Commend[1] = Convert.ToByte(lens);
+                    Array.Resize(ref Commend, lens + 2);
+                    int i = 2;
+                    foreach (byte element in Data)
+                    {
+                        //Console.WriteLine("{0} = {1}", element, (char)element); //check data on console
+                        Commend[i] = element;
+                        i++;
+                    }
+                    serialPort1.Write(Commend, 0, Commend.Length);
+                }
+            }
             //serialPort1.WriteLine(textBox1.Text);
-            serialPort1.Write(Commend, 0, Commend.Length);
             textBox1.Text = "";
         }
+        public static byte[] StringToByteArray(String hex)
+        {
+            int NumberChars = hex.Length;
+            byte[] bytes = new byte[NumberChars / 2];
+            try
+            {
+                for (int i = 0; i < NumberChars; i += 2)
+                    bytes[i / 2] = Convert.ToByte(hex.Substring(i, 2), 16);
+                return bytes;
+            }
+            catch (System.FormatException)
+            {
+                MessageBox.Show("Wrong Hex format..");
+                byte[] FailArray = new byte[200];
+                FailArray[199] = 0xFF;
+                return FailArray;
+            }
+            catch (System.ArgumentOutOfRangeException)
+            {
+                MessageBox.Show("Wrong Hex length..");
+                byte[] FailArray = new byte[200];
+                FailArray[199] = 0xFF;
+                return FailArray;
+            }
+        }
     }
+
 }
