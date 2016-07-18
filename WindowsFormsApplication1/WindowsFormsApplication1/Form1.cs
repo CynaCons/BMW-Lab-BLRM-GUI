@@ -85,7 +85,6 @@ namespace WindowsFormsApplication1
                     t.Start();
                     progressBar1.Value = 100;
                     button1.Enabled = true;
-                    button2.Enabled = true;
                     textBox1.Enabled = true;
                     button3.Enabled = false;
                     button4.Enabled = true;
@@ -104,7 +103,6 @@ namespace WindowsFormsApplication1
             serialPort1.Close();
             progressBar1.Value = 0;
             button1.Enabled = false;
-            button2.Enabled = false;
             textBox1.Enabled = false;
             button3.Enabled = true;
             button4.Enabled = false;
@@ -118,27 +116,7 @@ namespace WindowsFormsApplication1
 
         }
 
-        private void button2_Click(object sender, EventArgs e) /*Recive*/
-        {
-            try
-            {
-                byte[] Responce = new byte[255];
-                //textBox2.Text = serialPort1.ReadLine();
-                serialPort1.Read(Responce, 0, Responce.Length);
-                int i;
-                for (i = 0; i <= Responce.Length; i++)
-                {
-                    if (Responce[i] != 0x00)
-                    {
-                        textBox2.Text += Convert.ToString(Responce[i]);
-                    }
-                }
-            }
-            catch(TimeoutException)
-            {
-                textBox2.Text = "Timeout Exception";
-            }
-        }
+        
         private void DoReceive()
         {
             try
