@@ -10,8 +10,5 @@ Available Function
     -Network Join
     -Data Transfer [Manually type-in]
     -ASCII & HEX type frame are available to use
-
-Hi, this is my first pull request. I hope I make it correctly.
-Coming Soon : 
-    - Periodic transfer of sensor data
-    - Settings configuration from GUI using UART
+    -Periodic transfer of sensor data
+    -Settings configuration from GUI using UART
