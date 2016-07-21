@@ -23,11 +23,11 @@ namespace WindowsFormsApplication1
         public Form1()
         {
             InitializeComponent();
-            GetAvaliblePorts();
+            GetAvalaiblePorts();
             serialPort1.ReadTimeout = 1000;
             serialPort1.WriteTimeout = 1000;
         }
-        void GetAvaliblePorts()
+        void GetAvalaiblePorts()
         {
             string[] ports = SerialPort.GetPortNames();
             comboBox1.Items.AddRange(ports);
