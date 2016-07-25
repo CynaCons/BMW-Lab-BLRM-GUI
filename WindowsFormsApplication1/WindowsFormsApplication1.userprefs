@@ -1,9 +1,9 @@
 ﻿<Properties StartupItem="WindowsFormsApplication1/WindowsFormsApplication1.csproj">
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="WindowsFormsApplication1/Form1.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="WindowsFormsApplication1/Form1.Designer.cs">
     <Files>
-      <File FileName="WindowsFormsApplication1/Form1.cs" Line="119" Column="21" />
-      <File FileName="WindowsFormsApplication1/Form1.Designer.cs" Line="172" Column="82" />
+      <File FileName="WindowsFormsApplication1/Form1.cs" Line="1" Column="1" />
+      <File FileName="WindowsFormsApplication1/Form1.Designer.cs" Line="180" Column="48" />
       <File FileName="WindowsFormsApplication1/Form1.resx" Line="1" Column="1" />
       <File FileName="WindowsFormsApplication1/App.config" Line="1" Column="1" />
       <File FileName="WindowsFormsApplication1/Program.cs" Line="1" Column="1" />
