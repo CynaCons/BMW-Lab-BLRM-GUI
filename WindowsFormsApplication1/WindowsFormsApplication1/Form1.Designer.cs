@@ -41,7 +41,7 @@
             this.button_networkJoin = new System.Windows.Forms.Button();
             this.textBox_send = new System.Windows.Forms.TextBox();
             this.groupBox_receive = new System.Windows.Forms.GroupBox();
-            this.textBox_receive = new System.Windows.Forms.TextBox();
+			this.textBox_receive = new System.Windows.Forms.RichTextBox();
             this.button_openPort = new System.Windows.Forms.Button();
             this.button_closePort = new System.Windows.Forms.Button();
             this.label_portName = new System.Windows.Forms.Label();
@@ -169,7 +169,7 @@
             this.textBox_send.Name = "textBox1";
             this.textBox_send.Size = new System.Drawing.Size(760, 60);
             this.textBox_send.TabIndex = 0;
-            this.textBox_send.TextChanged += new System.EventHandler(this.textBox1_TextChanged_1);
+            this.textBox_send.TextChanged += new System.EventHandler(this.textBox_send_TextChanged);
             // 
             // groupBox_receive
             // 
@@ -183,13 +183,15 @@
             // 
             // textBox_receive
             // 
-            this.textBox_receive.Enabled = false;
+            this.textBox_receive.Enabled = true;
             this.textBox_receive.Location = new System.Drawing.Point(20, 20);
             this.textBox_receive.Multiline = true;
             this.textBox_receive.Name = "textBox2";
             this.textBox_receive.ReadOnly = true;
             this.textBox_receive.Size = new System.Drawing.Size(760, 460);
             this.textBox_receive.TabIndex = 0;
+			this.textBox_receive.ScrollBars = System.Windows.Forms.RichTextBoxScrollBars.Vertical;
+			//this.textBox_receive.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
             // 
             // button_openPort
             // 
@@ -315,7 +317,7 @@
         private System.Windows.Forms.GroupBox groupBox_send;
         private System.Windows.Forms.TextBox textBox_send;
         private System.Windows.Forms.GroupBox groupBox_receive;
-        private System.Windows.Forms.TextBox textBox_receive;
+        private System.Windows.Forms.RichTextBox textBox_receive;
         private System.Windows.Forms.Button button_openPort;
         private System.Windows.Forms.Button button_closePort;
         private System.Windows.Forms.Label label_portName;

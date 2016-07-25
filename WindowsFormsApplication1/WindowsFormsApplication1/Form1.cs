@@ -37,17 +37,15 @@ namespace WindowsFormsApplication1
         private void Form1_Load(object sender, EventArgs e)
         {
         }
-        delegate void Display(byte[] buffer);
+		delegate void Display(string inData);
         private Boolean receiving;
-		private Boolean sending = true;//TODO this is disgusting
 
         private Thread receiveingThread;
-		private Thread sendingThread;
 
-        private void DisplayText(byte[] buffer)
+		private void DisplayText(string inData)
         {
-            textBox_receive.Clear();
-            textBox_receive.Text += string.Format("{0}{1}", Encoding.ASCII.GetString(buffer), Environment.NewLine);
+            //textBox_receive.Clear();
+			textBox_receive.AppendText (string.Format("{0}{1}", inData, Environment.NewLine));
         }
         private void button1_Click(object sender, EventArgs e)          /*Send Signal Check*/
         {
@@ -85,11 +83,7 @@ namespace WindowsFormsApplication1
                     receiveingThread = new Thread(DoReceive);
                     receiveingThread.IsBackground = true;
                     receiveingThread.Start();
-
-					sendingThread = new Thread(DoSending);
-					sendingThread.IsBackground = true;
-					sendingThread.Start();
-
+				
 
                     progressBar_status.Value = 100;
                     button_signalCheck.Enabled = true;
@@ -119,31 +113,13 @@ namespace WindowsFormsApplication1
             receiveingThread.Abort();
         }    
 
-        private void textBox1_TextChanged_1(object sender, EventArgs e)
+        private void textBox_send_TextChanged(object sender, EventArgs e)
         {
-
+			serialPort1.Write (textBox_send.Text);
+			textBox_send.Text = "";
         }
 
-		private void DoSending()
-		{
-			try{
-				while(sending){
-					Thread.Sleep(50);
-					string txBuffer = textBox_send.Text;
-					if(txBuffer.Contains("\n")){
-						txBuffer = txBuffer.Remove(txBuffer.LastIndexOf("\n"));
-						Console.Write(txBuffer);
-						txBuffer = "";
-						textBox_send.Text = "";
-					}
-				}
-
-			}catch(InvalidOperationException e){
-				Console.Write (e.Message);
-				sendingThread.IsBackground = false;
-				sendingThread.Abort ();
-			}
-		}
+	
 
         private void DoReceive()
         {
@@ -152,17 +128,27 @@ namespace WindowsFormsApplication1
                 Byte[] buffer = new Byte[1024];
                 while (receiving)
                 {
-                    if (serialPort1.BytesToRead > 0)
-                    {
-                        Int32 length = serialPort1.Read(buffer, 0, buffer.Length);
-                        Array.Resize(ref buffer, length);
-                        Display d = new Display(DisplayText);
-                        this.Invoke(d, new Object[] { buffer });
-                        Array.Resize(ref buffer, 1024);
-                    }
-                    Thread.Sleep(16);
+					if(serialPort1.BytesToRead > 0){
+						string inData =  serialPort1.ReadExisting();
+						Display d = new Display(DisplayText);
+                        this.Invoke(d, new Object[] { inData });
+						//textBox_receive.AppendText(string.Format("{0}{1}",inData,Environment.NewLine));
+						//Console.WriteLine(inData);
+
+						//textBox_receive.Text += inData;
+					}
+//                    if (serialPort1.BytesToRead > 0)
+//                    {
+//                        Int32 length = serialPort1.Read(buffer, 0, buffer.Length);
+//                        Array.Resize(ref buffer, length);
+////                        Display d = new Display(DisplayText);
+////                        this.Invoke(d, new Object[] { buffer });
+//						textBox_receive.AppendText(Encoding.ASCII.GetString(buffer));
+//                        Array.Resize(ref buffer, 1024);
+//                    }
+					Thread.Sleep(50);
                 }
-            }
+			}
             catch(InvalidOperationException) /*Avoid Derictly Close The Form without close port*/
             {
                 receiveingThread.IsBackground = false;
