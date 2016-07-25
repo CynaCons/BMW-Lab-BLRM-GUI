@@ -2,6 +2,44 @@
 {
     partial class Form1
     {
+
+
+
+		private System.Windows.Forms.Button button_signalCheck;
+		private System.Windows.Forms.ComboBox comboBox_port;
+		private System.Windows.Forms.ComboBox comboBox_baudRate;
+		private System.Windows.Forms.ProgressBar progressBar_status;
+		private System.Windows.Forms.GroupBox groupBox_send;
+		private System.Windows.Forms.TextBox textBox_send;
+		private System.Windows.Forms.GroupBox groupBox_receive;
+		private System.Windows.Forms.RichTextBox textBox_receive;
+		private System.Windows.Forms.Button button_openPort;
+		private System.Windows.Forms.Button button_closePort;
+		private System.Windows.Forms.Label label_portName;
+		private System.Windows.Forms.Label label_baudRate;
+		private System.Windows.Forms.Label label_status;
+		private System.IO.Ports.SerialPort serialPort1;
+		private System.Windows.Forms.Button button_networkJoin;
+		private System.Windows.Forms.Button button_sendData;
+		private System.Windows.Forms.RadioButton radioButton1;
+		private System.Windows.Forms.RadioButton radioButton2;
+		private System.Windows.Forms.PictureBox pictureBox1;
+		private System.Windows.Forms.PictureBox pictureBox2;
+		private System.Windows.Forms.Label label4;
+
+
+		private System.Windows.Forms.Label label_timerPeriod;
+		private System.Windows.Forms.Label label_timerPeriodValue;
+
+		private System.Windows.Forms.Label label_automodeStatus;
+		private System.Windows.Forms.Label label_automodeStatusValue;
+
+		private System.Windows.Forms.Label label_networkJoin;
+		private System.Windows.Forms.Label label_networkJoinValue;
+
+		private System.Windows.Forms.Label label_rfSignalCheck;
+		private System.Windows.Forms.Label label_rfSignalCheckValue;
+
         /// <summary>
         /// 設計工具所需的變數。
         /// </summary>
@@ -53,6 +91,19 @@
             this.label4 = new System.Windows.Forms.Label();
             this.groupBox_send.SuspendLayout();
             this.groupBox_receive.SuspendLayout();
+
+			this.label_timerPeriod = new System.Windows.Forms.Label ();
+			this.label_timerPeriodValue = new System.Windows.Forms.Label ();
+
+			this.label_automodeStatus = new System.Windows.Forms.Label ();
+			this.label_automodeStatusValue = new System.Windows.Forms.Label ();
+
+			this.label_networkJoin = new System.Windows.Forms.Label ();
+			this.label_networkJoinValue = new System.Windows.Forms.Label ();
+
+			this.label_rfSignalCheck = new System.Windows.Forms.Label ();
+			this.label_rfSignalCheckValue = new System.Windows.Forms.Label ();
+
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).BeginInit();
             this.SuspendLayout();
@@ -67,7 +118,7 @@
             this.button_signalCheck.TabIndex = 0;
             this.button_signalCheck.Text = "Signal Check";
             this.button_signalCheck.UseVisualStyleBackColor = true;
-            this.button_signalCheck.Click += new System.EventHandler(this.button1_Click);
+            this.button_signalCheck.Click += new System.EventHandler(this.button_signalCheck_Click);
           
             // 
             // comboBox_port
@@ -147,7 +198,7 @@
             this.button_sendData.TabIndex = 14;
             this.button_sendData.Text = "Send Data";
             this.button_sendData.UseVisualStyleBackColor = true;
-            this.button_sendData.Click += new System.EventHandler(this.button6_Click);
+            this.button_sendData.Click += new System.EventHandler(this.button_sendData_Click);
             // 
             // button_networkJoin
             // 
@@ -159,7 +210,7 @@
             this.button_networkJoin.TabIndex = 13;
             this.button_networkJoin.Text = "Network Join";
             this.button_networkJoin.UseVisualStyleBackColor = true;
-            this.button_networkJoin.Click += new System.EventHandler(this.button5_Click);
+            this.button_networkJoin.Click += new System.EventHandler(this.button_networkJoin_Click);
             // 
             // textBox_send
             // 
@@ -202,7 +253,7 @@
             this.button_openPort.TabIndex = 9;
             this.button_openPort.Text = "Open Port";
             this.button_openPort.UseVisualStyleBackColor = true;
-            this.button_openPort.Click += new System.EventHandler(this.button3_Click);
+            this.button_openPort.Click += new System.EventHandler(this.button_openPort_Click);
             // 
             // button_closePort
             // 
@@ -214,7 +265,7 @@
             this.button_closePort.TabIndex = 2;
             this.button_closePort.Text = "Close Port";
             this.button_closePort.UseVisualStyleBackColor = true;
-            this.button_closePort.Click += new System.EventHandler(this.button4_Click);
+            this.button_closePort.Click += new System.EventHandler(this.button_closePort_Click);
             // 
             // label_portName
             // 
@@ -249,7 +300,7 @@
             // pictureBox1
             // 
             this.pictureBox1.Image = ((System.Drawing.Image)(resources.GetObject("pictureBox1.Image")));
-            this.pictureBox1.Location = new System.Drawing.Point(840, 407);
+            this.pictureBox1.Location = new System.Drawing.Point(840, 575);
             this.pictureBox1.Name = "pictureBox1";
             this.pictureBox1.Size = new System.Drawing.Size(176, 73);
             this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
@@ -259,7 +310,7 @@
             // pictureBox2
             // 
             this.pictureBox2.Image = ((System.Drawing.Image)(resources.GetObject("pictureBox2.Image")));
-            this.pictureBox2.Location = new System.Drawing.Point(840, 286);
+            this.pictureBox2.Location = new System.Drawing.Point(1025, 575);
             this.pictureBox2.Name = "pictureBox2";
             this.pictureBox2.Size = new System.Drawing.Size(176, 74);
             this.pictureBox2.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
@@ -270,12 +321,90 @@
             // 
             this.label4.AutoSize = true;
             this.label4.Font = new System.Drawing.Font("Calibri", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label4.Location = new System.Drawing.Point(840, 385);
+            this.label4.Location = new System.Drawing.Point(840, 550);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(65, 19);
             this.label4.TabIndex = 15;
             this.label4.Text = "Made by";
-            // 
+
+			//
+			//timerPeriod label
+			//
+			this.label_timerPeriod.AutoSize = true;
+			this.label_timerPeriod.Font = new System.Drawing.Font ("Calibri", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this.label_timerPeriod.Location = new System.Drawing.Point (840, 425);
+			this.label_timerPeriod.Name = "label_timerPeriod";
+			this.label_timerPeriod.Text = "Current timer period :";
+
+			//
+			//timerPeriodValue label
+			//
+			this.label_timerPeriodValue.AutoSize = true;
+			this.label_timerPeriodValue.Font = new System.Drawing.Font ("Calibri", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this.label_timerPeriodValue.Location = new System.Drawing.Point (1025, 425);
+			this.label_timerPeriodValue.Name = "label_timerPeriodValue";
+			this.label_timerPeriodValue.Text =  "? seconds";
+
+
+			//
+			//automodeStatus label
+			//
+			this.label_automodeStatus.AutoSize = true;
+			this.label_automodeStatus.Font = new System.Drawing.Font ("Calibri", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this.label_automodeStatus.Location = new System.Drawing.Point (840, 400);
+			this.label_automodeStatus.Name = "label_automodeStatus";
+			this.label_automodeStatus.Text = "Current AutoMode Status :";
+
+			//
+			//automodeStatusValue label
+			//
+			this.label_automodeStatusValue.AutoSize = true;
+			this.label_automodeStatusValue.Font = new System.Drawing.Font ("Calibri", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this.label_automodeStatusValue.Location = new System.Drawing.Point (1025, 400);
+			this.label_automodeStatusValue.Name = "label_automodeStatusValue";
+			this.label_automodeStatusValue.Text =  "OFF";
+
+
+			//
+			//rfSignalCheck label
+			//
+			this.label_rfSignalCheck.AutoSize = true;
+			this.label_rfSignalCheck.Font = new System.Drawing.Font ("Calibri", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this.label_rfSignalCheck.Location = new System.Drawing.Point (840, 375);
+			this.label_rfSignalCheck.Name = "label_signalCheck";
+			this.label_rfSignalCheck.Text = "Current signal status :";
+
+			//
+			//rfSignalCheckValue label
+			//
+			this.label_rfSignalCheckValue.AutoSize = true;
+			this.label_rfSignalCheckValue.Font = new System.Drawing.Font ("Calibri", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this.label_rfSignalCheckValue.Location = new System.Drawing.Point (1025, 375);
+			this.label_rfSignalCheckValue.Name = "label_signalCheckValue";
+			this.label_rfSignalCheckValue.Text = "RSSI : ? SNR : ?";
+
+
+			//
+			//networkJoin label
+			//
+			this.label_networkJoin.AutoSize = true;
+			this.label_networkJoin.Font = new System.Drawing.Font ("Calibri", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this.label_networkJoin.Location = new System.Drawing.Point (840, 350);
+			this.label_networkJoin.Name = "label_networkJoin";
+			this.label_networkJoin.Text = "Current network status :";
+
+			//
+			//networkJoinValue label
+			//
+			this.label_networkJoinValue.AutoSize = true;
+			this.label_networkJoinValue.Font = new System.Drawing.Font ("Calibri", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this.label_networkJoinValue.Location = new System.Drawing.Point (1025, 350);
+			this.label_networkJoinValue.Name = "label_networkJoinValue";
+			this.label_networkJoinValue.Text = "Disconnected";
+
+
+
+			// 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
@@ -294,6 +423,19 @@
             this.Controls.Add(this.progressBar_status);
             this.Controls.Add(this.comboBox_baudRate);
             this.Controls.Add(this.comboBox_port);
+
+			this.Controls.Add (this.label_timerPeriod);
+			this.Controls.Add (this.label_timerPeriodValue);
+
+			this.Controls.Add (this.label_automodeStatus);
+			this.Controls.Add (this.label_automodeStatusValue);
+
+			this.Controls.Add (this.label_networkJoin);
+			this.Controls.Add (this.label_networkJoinValue);
+
+			this.Controls.Add (this.label_rfSignalCheck);
+			this.Controls.Add (this.label_rfSignalCheckValue);
+
             this.Name = "Form1";
             this.Text = "Blutech LoRa Tool";
             this.Load += new System.EventHandler(this.Form1_Load);
@@ -310,27 +452,7 @@
 
         #endregion
 
-        private System.Windows.Forms.Button button_signalCheck;
-        private System.Windows.Forms.ComboBox comboBox_port;
-        private System.Windows.Forms.ComboBox comboBox_baudRate;
-        private System.Windows.Forms.ProgressBar progressBar_status;
-        private System.Windows.Forms.GroupBox groupBox_send;
-        private System.Windows.Forms.TextBox textBox_send;
-        private System.Windows.Forms.GroupBox groupBox_receive;
-        private System.Windows.Forms.RichTextBox textBox_receive;
-        private System.Windows.Forms.Button button_openPort;
-        private System.Windows.Forms.Button button_closePort;
-        private System.Windows.Forms.Label label_portName;
-        private System.Windows.Forms.Label label_baudRate;
-        private System.Windows.Forms.Label label_status;
-        private System.IO.Ports.SerialPort serialPort1;
-        private System.Windows.Forms.Button button_networkJoin;
-        private System.Windows.Forms.Button button_sendData;
-        private System.Windows.Forms.RadioButton radioButton1;
-        private System.Windows.Forms.RadioButton radioButton2;
-        private System.Windows.Forms.PictureBox pictureBox1;
-        private System.Windows.Forms.PictureBox pictureBox2;
-        private System.Windows.Forms.Label label4;
+   
     }
 }
 

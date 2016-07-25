@@ -18,14 +18,26 @@ namespace WindowsFormsApplication1
 {
     public partial class Form1 : Form
     {
+		private static Boolean keepReceiving;
 
+		private static Boolean keepAnalysing;
+
+		private Thread receivingThread;
+
+		private Thread stringAnalysingThread;
+
+		delegate void Delegate(string inData);
+
+		delegate void UpdateDelegate(string newValue);
+
+		private static Object myMutex = new Object();
+
+		private static string synchronizedBuffer = String.Empty;
     
         public Form1()
         {
             InitializeComponent();
             GetAvalaiblePorts();
-            serialPort1.ReadTimeout = 1000;
-            serialPort1.WriteTimeout = 1000;
 			WindowState = FormWindowState.Maximized;
         }
         void GetAvalaiblePorts()
@@ -37,20 +49,35 @@ namespace WindowsFormsApplication1
         private void Form1_Load(object sender, EventArgs e)
         {
         }
-		delegate void Display(string inData);
-        private Boolean receiving;
-
-        private Thread receiveingThread;
+      
 
 		private void DisplayText(string inData)
         {
-            //textBox_receive.Clear();
-			textBox_receive.AppendText (string.Format("{0}{1}", inData, Environment.NewLine));
+			textBox_receive.AppendText(inData);
         }
-        private void button1_Click(object sender, EventArgs e)          /*Send Signal Check*/
+
+
+		private void UpdateTimerPeriod (string newValue){
+			label_timerPeriodValue.Text = newValue;
+		}
+
+
+		private void UpdateAutoModeStatus (string newValue){
+			label_automodeStatusValue.Text = newValue;
+		}
+
+		private void UpdateNetworkStatus(string newStatus){
+			label_networkJoinValue.Text = newStatus;
+		}
+
+		private void UpdateSignalStatus(string newStatus){
+			label_rfSignalCheckValue.Text = newStatus;
+		}
+
+
+        private void button_signalCheck_Click(object sender, EventArgs e)          /*Send Signal Check*/
         {
             byte[] Commend = { 0x01, 0x01, 0x01 };
-            //serialPort1.WriteLine(textBox1.Text);
             serialPort1.Write(Commend,0,Commend.Length);
             textBox_send.Text = "";
         }
@@ -65,7 +92,7 @@ namespace WindowsFormsApplication1
 
         }
 
-        private void button3_Click(object sender, EventArgs e)         /*open port*/
+        private void button_openPort_Click(object sender, EventArgs e)         /*open port*/
         {
             try
             {
@@ -78,11 +105,16 @@ namespace WindowsFormsApplication1
                     serialPort1.PortName = comboBox_port.Text;
                     serialPort1.BaudRate = Convert.ToInt32(comboBox_baudRate.Text);
                     serialPort1.Open();
-                    receiving = true;
 
-                    receiveingThread = new Thread(DoReceive);
-                    receiveingThread.IsBackground = true;
-                    receiveingThread.Start();
+                    receivingThread = new Thread(receivingLoop);
+                    receivingThread.IsBackground = true;
+                    receivingThread.Start();
+					keepReceiving = true;
+
+					stringAnalysingThread = new Thread(stringAnalysingLoop);
+					stringAnalysingThread.IsBackground = true;
+					stringAnalysingThread.Start();
+					keepAnalysing = true;
 				
 
                     progressBar_status.Value = 100;
@@ -100,9 +132,13 @@ namespace WindowsFormsApplication1
             }
         }
 
-        private void button4_Click(object sender, EventArgs e)        /*close port*/
+        private void button_closePort_Click(object sender, EventArgs e)        /*close port*/
         {
             serialPort1.Close();
+			keepReceiving = false;
+			keepAnalysing = false;
+
+
             progressBar_status.Value = 0;
             button_signalCheck.Enabled = false;
             textBox_send.Enabled = false;
@@ -110,8 +146,8 @@ namespace WindowsFormsApplication1
             button_closePort.Enabled = false;
             button_networkJoin.Enabled = false;
             button_sendData.Enabled = false;
-            receiveingThread.Abort();
         }    
+
 
         private void textBox_send_TextChanged(object sender, EventArgs e)
         {
@@ -121,43 +157,107 @@ namespace WindowsFormsApplication1
 
 	
 
-        private void DoReceive()
+        private void receivingLoop()
         {
             try
             {
-                Byte[] buffer = new Byte[1024];
-                while (receiving)
+				while (keepReceiving)
                 {
 					if(serialPort1.BytesToRead > 0){
 						string inData =  serialPort1.ReadExisting();
-						Display d = new Display(DisplayText);
-                        this.Invoke(d, new Object[] { inData });
-						//textBox_receive.AppendText(string.Format("{0}{1}",inData,Environment.NewLine));
-						//Console.WriteLine(inData);
-
-						//textBox_receive.Text += inData;
+						Delegate d = new Delegate(DisplayText);
+						this.Invoke(d, inData);
+						lock(myMutex){
+							synchronizedBuffer += inData;
+						}
 					}
-//                    if (serialPort1.BytesToRead > 0)
-//                    {
-//                        Int32 length = serialPort1.Read(buffer, 0, buffer.Length);
-//                        Array.Resize(ref buffer, length);
-////                        Display d = new Display(DisplayText);
-////                        this.Invoke(d, new Object[] { buffer });
-//						textBox_receive.AppendText(Encoding.ASCII.GetString(buffer));
-//                        Array.Resize(ref buffer, 1024);
-//                    }
-					Thread.Sleep(50);
+					Thread.Sleep(25);
                 }
 			}
             catch(InvalidOperationException) /*Avoid Derictly Close The Form without close port*/
             {
-                receiveingThread.IsBackground = false;
-                receiveingThread.Abort();
+                receivingThread.IsBackground = false;
+                receivingThread.Abort();
             }
         }
 
 
-        private void button5_Click(object sender, EventArgs e)       /*Network Join*/
+		private string[] referenceStrings = {
+			"Current timer period value :",
+			"AutoMode Started !",
+			"AutoMode is ON",
+			"AutoMode is OFF",
+			"AutoMode Stopped",
+			"RF signal check answer was received",
+			"Network Join Failed",
+			"Network Join Succes"
+		};
+
+
+			
+		private void stringAnalysingLoop(){
+			Delegate d;
+			string tmp;
+			while (keepAnalysing) {
+				lock (myMutex) {
+					for(Int32 i = 0; i< referenceStrings.Length; i+=1) {
+						string currentReferenceString = referenceStrings[i];
+						if (synchronizedBuffer.Contains (currentReferenceString)) {
+							Int32 subStringIndex = synchronizedBuffer.IndexOf (currentReferenceString);
+							subStringIndex += currentReferenceString.Length;
+							switch (i) {
+							case 0: //Current timer period value :
+								d = new Delegate (UpdateTimerPeriod);
+								tmp = String.Format ("{0} seconds", synchronizedBuffer.Substring (subStringIndex));
+								this.Invoke (d, tmp);
+								break;
+							case 1: //AutoMode Started !
+								d = new Delegate (UpdateAutoModeStatus);
+								tmp = "ON";
+								this.Invoke (d, tmp);
+								break;
+							case 2: //AutoMode ON
+								d = new Delegate (UpdateAutoModeStatus);
+								tmp = "OFF";
+								this.Invoke (d, tmp);
+								break;
+							case 3: //AutoMode OFF
+								d = new Delegate (UpdateAutoModeStatus);
+								tmp = "OFF";
+								this.Invoke (d, tmp);
+								break;
+							case 4: //AutoMode Stopped
+								d = new Delegate (UpdateAutoModeStatus);
+								tmp = "OFF";
+								this.Invoke (d, tmp);
+								break;	
+							case 5: //RF signal check answer was received
+								d = new Delegate (UpdateSignalStatus);
+								tmp = String.Format ("{0} seconds", synchronizedBuffer.Substring (subStringIndex));
+								this.Invoke (d, tmp);
+								break;
+							case 6: //Network Join Failed
+								d = new Delegate (UpdateNetworkStatus);
+								tmp = "Disconnected";
+								this.Invoke (d, tmp);
+								break;
+							case 7: //Network Join Succes
+								d = new Delegate (UpdateNetworkStatus);
+								tmp = "Connected";
+								this.Invoke (d, tmp);
+								break;
+							}
+							break;
+						}
+					}
+					synchronizedBuffer = "";
+				}
+				Thread.Sleep (50);
+			}
+		}
+
+
+        private void button_networkJoin_Click(object sender, EventArgs e)       /*Network Join*/
         {
             byte[] Commend = { 0x02, 0x01, 0x01 };
             //serialPort1.WriteLine(textBox1.Text);
@@ -165,7 +265,7 @@ namespace WindowsFormsApplication1
             textBox_send.Text = "";
         }
 
-        private void button6_Click(object sender, EventArgs e)       /*Send Data*/
+        private void button_sendData_Click(object sender, EventArgs e)       /*Send Data*/
         {
             byte[] Commend = new byte[1024];
             if (radioButton1.Checked) /*read as ASCII*/
