@@ -1,15 +1,6 @@
 ﻿<Properties StartupItem="WindowsFormsApplication1/WindowsFormsApplication1.csproj">
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="WindowsFormsApplication1/Form1.cs">
-    <Files>
-      <File FileName="WindowsFormsApplication1/Form1.cs" Line="242" Column="19" />
-      <File FileName="WindowsFormsApplication1/Form1.Designer.cs" Line="344" Column="73" />
-      <File FileName="WindowsFormsApplication1/Form1.resx" Line="1" Column="1" />
-      <File FileName="WindowsFormsApplication1/App.config" Line="1" Column="1" />
-      <File FileName="WindowsFormsApplication1/Program.cs" Line="1" Column="1" />
-      <File FileName="../../../../../../usr/lib/mono/4.5/Microsoft.Common.targets" Line="1" Column="1" />
-    </Files>
-  </MonoDevelop.Ide.Workbench>
+  <MonoDevelop.Ide.Workbench />
   <MonoDevelop.Ide.DebuggingService.Breakpoints>
     <BreakpointStore />
   </MonoDevelop.Ide.DebuggingService.Breakpoints>

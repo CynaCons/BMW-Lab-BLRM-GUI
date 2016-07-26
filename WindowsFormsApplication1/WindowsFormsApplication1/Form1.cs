@@ -10,6 +10,7 @@ using System.Windows.Forms;
 using System.IO.Ports;
 using System.Threading;
 using System.Globalization;
+using System.Diagnostics;
 
 
 
@@ -22,6 +23,12 @@ namespace WindowsFormsApplication1
 
 		private static Boolean keepAnalysing;
 
+		private static Boolean keepUpdatingProgressBar;
+
+		private static Boolean automodeStatus;
+
+		private Thread updatingProgressBarThread;
+
 		private Thread receivingThread;
 
 		private Thread stringAnalysingThread;
@@ -33,7 +40,11 @@ namespace WindowsFormsApplication1
 		private static Object myMutex = new Object();
 
 		private static string synchronizedBuffer = String.Empty;
-    
+
+		private Int32 timerPeriodValue = 0;
+
+		private Stopwatch stopwatch = Stopwatch.StartNew();
+
         public Form1()
         {
             InitializeComponent();
@@ -45,23 +56,20 @@ namespace WindowsFormsApplication1
             string[] ports = SerialPort.GetPortNames();
             comboBox_port.Items.AddRange(ports);
 
-        }
-        private void Form1_Load(object sender, EventArgs e)
-        {
-        }
-      
+        }      
 
+		/**
+		 *  DELEGATES FUNCTIONS
+		 */
 		private void DisplayText(string inData)
         {
 			textBox_receive.AppendText(inData);
         }
 
-
 		private void UpdateTimerPeriod (string newValue){
 			label_timerPeriodValue.Text = newValue;
 		}
-
-
+			
 		private void UpdateAutoModeStatus (string newValue){
 			label_automodeStatusValue.Text = newValue;
 		}
@@ -74,24 +82,11 @@ namespace WindowsFormsApplication1
 			label_rfSignalCheckValue.Text = newStatus;
 		}
 
-
-        private void button_signalCheck_Click(object sender, EventArgs e)          /*Send Signal Check*/
-        {
-            byte[] Commend = { 0x01, 0x01, 0x01 };
-            serialPort1.Write(Commend,0,Commend.Length);
-            textBox_send.Text = "";
-        }
+		private void UpdateLastData(string newData){
+			label_lastDataValue.Text = newData;
+		}
 			
-        private void label1_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void comboBox2_SelectedIndexChanged(object sender, EventArgs e)
-        {
-
-        }
-
+	
         private void button_openPort_Click(object sender, EventArgs e)         /*open port*/
         {
             try
@@ -116,6 +111,10 @@ namespace WindowsFormsApplication1
 					stringAnalysingThread.Start();
 					keepAnalysing = true;
 				
+					updatingProgressBarThread = new Thread(updatingProgressBarLoop);
+					updatingProgressBarThread.IsBackground = true;
+					updatingProgressBarThread.Start();
+					keepUpdatingProgressBar = true;
 
                     progressBar_status.Value = 100;
                     button_signalCheck.Enabled = true;
@@ -137,8 +136,9 @@ namespace WindowsFormsApplication1
             serialPort1.Close();
 			keepReceiving = false;
 			keepAnalysing = false;
+			keepUpdatingProgressBar = false;
 
-
+		
             progressBar_status.Value = 0;
             button_signalCheck.Enabled = false;
             textBox_send.Enabled = false;
@@ -149,14 +149,19 @@ namespace WindowsFormsApplication1
         }    
 
 
+		/**
+		 * Clean send textBox after each character
+		 */
         private void textBox_send_TextChanged(object sender, EventArgs e)
         {
 			serialPort1.Write (textBox_send.Text);
 			textBox_send.Text = "";
         }
+			
 
-	
-
+		/**
+		 * Character reception via UART
+		 */
         private void receivingLoop()
         {
             try
@@ -164,14 +169,14 @@ namespace WindowsFormsApplication1
 				while (keepReceiving)
                 {
 					if(serialPort1.BytesToRead > 0){
-						string inData =  serialPort1.ReadExisting();
+						string inData =  serialPort1.ReadExisting().Replace("\0",String.Empty);
 						Delegate d = new Delegate(DisplayText);
 						this.Invoke(d, inData);
 						lock(myMutex){
 							synchronizedBuffer += inData;
 						}
 					}
-					Thread.Sleep(25);
+					Thread.Sleep(50);
                 }
 			}
             catch(InvalidOperationException) /*Avoid Derictly Close The Form without close port*/
@@ -182,156 +187,144 @@ namespace WindowsFormsApplication1
         }
 
 
+		/**
+		 * Reference strings. When one is received from the UART, some action will be done
+		 */
 		private string[] referenceStrings = {
 			"Current timer period value :",
 			"AutoMode Started !",
 			"AutoMode is ON",
 			"AutoMode is OFF",
 			"AutoMode Stopped",
-			"RF signal check answer was received",
-			"Network Join Failed",
-			"Network Join Succes"
+			"RSSI :",
+			"Network Join failed",
+			"Network Join succes",
+			"New timer period value :",
+			"Data Transfer succes",
+			"The following data was just sent :",
+			"Data Transfer failed"
 		};
-
-
 			
+
+		/**
+		 * Received characters are analysed by a special thread.
+		 * Input buffer is compared to reference strings and actions are performed when a string is recognized
+		 */
 		private void stringAnalysingLoop(){
 			Delegate d;
 			string tmp;
+			string rxBuffer;
 			while (keepAnalysing) {
 				lock (myMutex) {
-					for(Int32 i = 0; i< referenceStrings.Length; i+=1) {
-						string currentReferenceString = referenceStrings[i];
-						if (synchronizedBuffer.Contains (currentReferenceString)) {
-							Int32 subStringIndex = synchronizedBuffer.IndexOf (currentReferenceString);
-							subStringIndex += currentReferenceString.Length;
-							switch (i) {
-							case 0: //Current timer period value :
-								d = new Delegate (UpdateTimerPeriod);
-								tmp = String.Format ("{0} seconds", synchronizedBuffer.Substring (subStringIndex));
-								this.Invoke (d, tmp);
-								break;
-							case 1: //AutoMode Started !
-								d = new Delegate (UpdateAutoModeStatus);
-								tmp = "ON";
-								this.Invoke (d, tmp);
-								break;
-							case 2: //AutoMode ON
-								d = new Delegate (UpdateAutoModeStatus);
-								tmp = "OFF";
-								this.Invoke (d, tmp);
-								break;
-							case 3: //AutoMode OFF
-								d = new Delegate (UpdateAutoModeStatus);
-								tmp = "OFF";
-								this.Invoke (d, tmp);
-								break;
-							case 4: //AutoMode Stopped
-								d = new Delegate (UpdateAutoModeStatus);
-								tmp = "OFF";
-								this.Invoke (d, tmp);
-								break;	
-							case 5: //RF signal check answer was received
-								d = new Delegate (UpdateSignalStatus);
-								tmp = String.Format ("{0} seconds", synchronizedBuffer.Substring (subStringIndex));
-								this.Invoke (d, tmp);
-								break;
-							case 6: //Network Join Failed
-								d = new Delegate (UpdateNetworkStatus);
-								tmp = "Disconnected";
-								this.Invoke (d, tmp);
-								break;
-							case 7: //Network Join Succes
-								d = new Delegate (UpdateNetworkStatus);
-								tmp = "Connected";
-								this.Invoke (d, tmp);
-								break;
-							}
+					rxBuffer = (string)synchronizedBuffer.Clone ();
+					synchronizedBuffer = "";
+				}
+				for(Int32 i = 0; i< referenceStrings.Length; i+=1) {
+					string currentReferenceString = referenceStrings[i];
+					if (rxBuffer.Contains (currentReferenceString)) {
+						tmp = "";
+						Int32 subStringIndex = rxBuffer.IndexOf (currentReferenceString);
+						subStringIndex += currentReferenceString.Length;
+						switch (i) {
+						case 0: //Current timer period value :
+							d = new Delegate (UpdateTimerPeriod);
+							timerPeriodValue = Int32.Parse (rxBuffer.Substring (subStringIndex));
+							Stopwatch.StartNew ();
+							tmp = timerPeriodValue.ToString ();
+							tmp += " seconds";
+							this.Invoke (d, tmp);
+							break;
+						case 1: //AutoMode Started !
+							d = new Delegate (UpdateAutoModeStatus);
+							tmp = "ON";
+							this.Invoke (d, tmp);
+							automodeStatus = true;
+							break;
+						case 2: //AutoMode ON
+							d = new Delegate (UpdateAutoModeStatus);
+							Console.WriteLine ("Recognized automode on");
+							tmp = "ON";
+							this.Invoke (d, tmp);
+							automodeStatus = true;
+							stopwatch.Reset ();
+
+							break;
+						case 3: //AutoMode OFF
+							d = new Delegate (UpdateAutoModeStatus);
+							tmp = "OFF";
+							this.Invoke (d, tmp);
+							automodeStatus = false;
+							break;
+						case 4: //AutoMode Stopped
+							d = new Delegate (UpdateAutoModeStatus);
+							tmp = "OFF";
+							this.Invoke (d, tmp);
+							automodeStatus = false;
+							break;	
+						case 5: //RF signal check answer was received
+							d = new Delegate (UpdateSignalStatus);
+							tmp = String.Format ("RSSI : {0}", rxBuffer.Substring (subStringIndex));
+							this.Invoke (d, tmp);
+							break;
+						case 11:
+						case 6: //Network Join Failed
+							d = new Delegate (UpdateNetworkStatus);
+							tmp = "Disconnected";
+							this.Invoke (d, tmp);
+							break;
+						case 7: //Network Join Succes
+							//TODO DO REAL SWITCH CASE
+							d = new Delegate (UpdateNetworkStatus);
+							tmp = "Connected";
+							this.Invoke (d, tmp);
+							break;
+						case 8: //New timer period value :
+							d = new Delegate (UpdateTimerPeriod);
+							tmp = rxBuffer.Substring (subStringIndex).Split (new string[]{ System.Environment.NewLine }, StringSplitOptions.None).ElementAt (0);
+							timerPeriodValue = Int32.Parse (tmp);
+							tmp += " seconds";
+							this.Invoke (d, tmp);
+							break;
+						case 9: //Data Transfer succes
+							d = new Delegate (UpdateNetworkStatus);
+							tmp = "Connected";
+							this.Invoke (d, tmp);
+							break;
+						case 10: //The following data was just sent
+							d = new Delegate (UpdateLastData);
+							tmp = rxBuffer.Substring (subStringIndex);
+							this.Invoke (d, tmp);
 							break;
 						}
+						rxBuffer = rxBuffer.Substring (subStringIndex);
 					}
-					synchronizedBuffer = "";
 				}
 				Thread.Sleep (50);
 			}
 		}
 
 
-        private void button_networkJoin_Click(object sender, EventArgs e)       /*Network Join*/
-        {
-            byte[] Commend = { 0x02, 0x01, 0x01 };
-            //serialPort1.WriteLine(textBox1.Text);
-            serialPort1.Write(Commend, 0, Commend.Length);
-            textBox_send.Text = "";
-        }
-
-        private void button_sendData_Click(object sender, EventArgs e)       /*Send Data*/
-        {
-            byte[] Commend = new byte[1024];
-            if (radioButton1.Checked) /*read as ASCII*/
-            {
-                byte[] Data = Encoding.ASCII.GetBytes(textBox_send.Text);
-                int lens = 0;
-                lens += textBox_send.TextLength;
-                Commend[0] = 0x03;
-                Commend[1] = Convert.ToByte(lens);
-                Array.Resize(ref Commend, lens + 2);
-                int i = 2;
-                foreach (byte element in Data)
-                {
-                    //Console.WriteLine("{0} = {1}", element, (char)element); //check data on console
-                    Commend[i] = element;
-                    i++;
-                }
-            }
-            if (radioButton2.Checked) /*read as HEX*/
-            {
-                byte[] Data = StringToByteArray(textBox_send.Text);
-                int lens = 0;
-                lens += Data.Length;
-                if (lens <=128) /*lens more than 128 will be failure array*/
-                {
-                    Commend[0] = 0x03;
-                    Commend[1] = Convert.ToByte(lens);
-                    Array.Resize(ref Commend, lens + 2);
-                    int i = 2;
-                    foreach (byte element in Data)
-                    {
-                        //Console.WriteLine("{0} = {1}", element, (char)element); //check data on console
-                        Commend[i] = element;
-                        i++;
-                    }
-                    serialPort1.Write(Commend, 0, Commend.Length);
-                }
-            }
-            //serialPort1.WriteLine(textBox1.Text);
-            textBox_send.Text = "";
-        }
-        public static byte[] StringToByteArray(String hex)
-        {
-            int NumberChars = hex.Length;
-            byte[] bytes = new byte[NumberChars / 2];
-            try
-            {
-                for (int i = 0; i < NumberChars; i += 2)
-                    bytes[i / 2] = Convert.ToByte(hex.Substring(i, 2), 16);
-                return bytes;
-            }
-            catch (System.FormatException)
-            {
-                MessageBox.Show("Wrong Hex format..");
-                byte[] FailArray = new byte[200];
-                FailArray[199] = 0xFF;
-                return FailArray;
-            }
-            catch (System.ArgumentOutOfRangeException)
-            {
-                MessageBox.Show("Wrong Hex length..");
-                byte[] FailArray = new byte[200];
-                FailArray[199] = 0xFF;
-                return FailArray;
-            }
-        }
+		/**
+		 * Update progress bar to indicate when the next data tranfer will occur
+		 */
+		private void updatingProgressBarLoop(){
+			while (keepUpdatingProgressBar) {
+				if (automodeStatus == true) {
+					if (stopwatch.IsRunning == false) {
+						stopwatch.Start ();
+					}
+					int timerBarValue = (int)(Math.Round ((stopwatch.Elapsed.TotalSeconds / timerPeriodValue) * 100));
+					if (timerPeriodValue != 0 && timerBarValue < 100) {
+						progressBar_timerPeriod.Value = timerBarValue; 
+					}
+				} else {
+					progressBar_timerPeriod.Value = 0;
+						if(stopwatch.IsRunning == true){
+						stopwatch.Stop();
+					}
+				}
+				Thread.Sleep (250);
+			}
+		}
     }
-
 }

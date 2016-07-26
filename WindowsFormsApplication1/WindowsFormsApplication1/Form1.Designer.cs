@@ -21,8 +21,8 @@
 		private System.IO.Ports.SerialPort serialPort1;
 		private System.Windows.Forms.Button button_networkJoin;
 		private System.Windows.Forms.Button button_sendData;
-		private System.Windows.Forms.RadioButton radioButton1;
-		private System.Windows.Forms.RadioButton radioButton2;
+		//private System.Windows.Forms.RadioButton radioButton1;
+		//private System.Windows.Forms.RadioButton radioButton2;
 		private System.Windows.Forms.PictureBox pictureBox1;
 		private System.Windows.Forms.PictureBox pictureBox2;
 		private System.Windows.Forms.Label label4;
@@ -30,6 +30,8 @@
 
 		private System.Windows.Forms.Label label_timerPeriod;
 		private System.Windows.Forms.Label label_timerPeriodValue;
+		private System.Windows.Forms.ProgressBar progressBar_timerPeriod;
+		private System.Windows.Forms.Label label_progressBarTimerPeriod;
 
 		private System.Windows.Forms.Label label_automodeStatus;
 		private System.Windows.Forms.Label label_automodeStatusValue;
@@ -40,15 +42,12 @@
 		private System.Windows.Forms.Label label_rfSignalCheck;
 		private System.Windows.Forms.Label label_rfSignalCheckValue;
 
-        /// <summary>
-        /// 設計工具所需的變數。
-        /// </summary>
+		private System.Windows.Forms.Label label_lastData;
+		private System.Windows.Forms.Label label_lastDataValue;
+
+	
         private System.ComponentModel.IContainer components = null;
 
-        /// <summary>
-        /// 清除任何使用中的資源。
-        /// </summary>
-        /// <param name="disposing">如果應該處置 Managed 資源則為 true，否則為 false。</param>
         protected override void Dispose(bool disposing)
         {
             if (disposing && (components != null))
@@ -60,10 +59,6 @@
 
         #region Windows Form 設計工具產生的程式碼
 
-        /// <summary>
-        /// 此為設計工具支援所需的方法 - 請勿使用程式碼編輯器修改
-        /// 這個方法的內容。
-        /// </summary>
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
@@ -73,8 +68,8 @@
             this.comboBox_baudRate = new System.Windows.Forms.ComboBox();
             this.progressBar_status = new System.Windows.Forms.ProgressBar();
             this.groupBox_send = new System.Windows.Forms.GroupBox();
-            this.radioButton1 = new System.Windows.Forms.RadioButton();
-            this.radioButton2 = new System.Windows.Forms.RadioButton();
+            //this.radioButton1 = new System.Windows.Forms.RadioButton();
+            //this.radioButton2 = new System.Windows.Forms.RadioButton();
             this.button_sendData = new System.Windows.Forms.Button();
             this.button_networkJoin = new System.Windows.Forms.Button();
             this.textBox_send = new System.Windows.Forms.TextBox();
@@ -94,6 +89,8 @@
 
 			this.label_timerPeriod = new System.Windows.Forms.Label ();
 			this.label_timerPeriodValue = new System.Windows.Forms.Label ();
+			this.progressBar_timerPeriod = new System.Windows.Forms.ProgressBar ();
+			this.label_progressBarTimerPeriod = new System.Windows.Forms.Label ();
 
 			this.label_automodeStatus = new System.Windows.Forms.Label ();
 			this.label_automodeStatusValue = new System.Windows.Forms.Label ();
@@ -104,21 +101,13 @@
 			this.label_rfSignalCheck = new System.Windows.Forms.Label ();
 			this.label_rfSignalCheckValue = new System.Windows.Forms.Label ();
 
+			this.label_lastData = new System.Windows.Forms.Label ();
+			this.label_lastDataValue = new System.Windows.Forms.Label ();
+
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).BeginInit();
             this.SuspendLayout();
-            // 
-            // button_signalCheck
-            // 
-            this.button_signalCheck.Enabled = false;
-            this.button_signalCheck.Font = new System.Drawing.Font("Calibri", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.button_signalCheck.Location = new System.Drawing.Point(960, 100);
-            this.button_signalCheck.Name = "button1";
-            this.button_signalCheck.Size = new System.Drawing.Size(100, 40);
-            this.button_signalCheck.TabIndex = 0;
-            this.button_signalCheck.Text = "Signal Check";
-            this.button_signalCheck.UseVisualStyleBackColor = true;
-            this.button_signalCheck.Click += new System.EventHandler(this.button_signalCheck_Click);
+        
           
             // 
             // comboBox_port
@@ -142,7 +131,7 @@
             this.comboBox_baudRate.Name = "comboBox2";
             this.comboBox_baudRate.Size = new System.Drawing.Size(100, 10);
             this.comboBox_baudRate.TabIndex = 5;
-            this.comboBox_baudRate.SelectedIndexChanged += new System.EventHandler(this.comboBox2_SelectedIndexChanged);
+            //this.comboBox_baudRate.SelectedIndexChanged += new System.EventHandler(this.comboBox2_SelectedIndexChanged);
             // 
             // progressBar_status
             // 
@@ -163,54 +152,7 @@
             this.groupBox_send.TabIndex = 7;
             this.groupBox_send.TabStop = false;
             this.groupBox_send.Text = "Send";
-            // 
-            // radioButton1
-            // 
-            this.radioButton1.AutoSize = true;
-            this.radioButton1.Font = new System.Drawing.Font("Calibri", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.radioButton1.Location = new System.Drawing.Point(9, 14);
-            this.radioButton1.Name = "radioButton1";
-            this.radioButton1.Size = new System.Drawing.Size(60, 23);
-            this.radioButton1.TabIndex = 13;
-            this.radioButton1.TabStop = true;
-            this.radioButton1.Text = "ASCII";
-            this.radioButton1.UseVisualStyleBackColor = true;
-            // 
-            // radioButton2
-            // 
-            this.radioButton2.AutoSize = true;
-            this.radioButton2.Font = new System.Drawing.Font("Calibri", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.radioButton2.Location = new System.Drawing.Point(79, 14);
-            this.radioButton2.Name = "radioButton2";
-            this.radioButton2.Size = new System.Drawing.Size(53, 23);
-            this.radioButton2.TabIndex = 14;
-            this.radioButton2.TabStop = true;
-            this.radioButton2.Text = "HEX";
-            this.radioButton2.UseVisualStyleBackColor = true;
-            // 
-            // button_sendData
-            // 
-            this.button_sendData.Enabled = false;
-            this.button_sendData.Font = new System.Drawing.Font("Calibri", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.button_sendData.Location = new System.Drawing.Point(960, 20);
-            this.button_sendData.Name = "button6";
-            this.button_sendData.Size = new System.Drawing.Size(100, 40);
-            this.button_sendData.TabIndex = 14;
-            this.button_sendData.Text = "Send Data";
-            this.button_sendData.UseVisualStyleBackColor = true;
-            this.button_sendData.Click += new System.EventHandler(this.button_sendData_Click);
-            // 
-            // button_networkJoin
-            // 
-            this.button_networkJoin.Enabled = false;
-            this.button_networkJoin.Font = new System.Drawing.Font("Calibri", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.button_networkJoin.Location = new System.Drawing.Point(960, 160);
-            this.button_networkJoin.Name = "button5";
-            this.button_networkJoin.Size = new System.Drawing.Size(100, 40);
-            this.button_networkJoin.TabIndex = 13;
-            this.button_networkJoin.Text = "Network Join";
-            this.button_networkJoin.UseVisualStyleBackColor = true;
-            this.button_networkJoin.Click += new System.EventHandler(this.button_networkJoin_Click);
+           
             // 
             // textBox_send
             // 
@@ -332,7 +274,7 @@
 			//
 			this.label_timerPeriod.AutoSize = true;
 			this.label_timerPeriod.Font = new System.Drawing.Font ("Calibri", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.label_timerPeriod.Location = new System.Drawing.Point (840, 425);
+			this.label_timerPeriod.Location = new System.Drawing.Point (840, 375);
 			this.label_timerPeriod.Name = "label_timerPeriod";
 			this.label_timerPeriod.Text = "Current timer period :";
 
@@ -341,17 +283,34 @@
 			//
 			this.label_timerPeriodValue.AutoSize = true;
 			this.label_timerPeriodValue.Font = new System.Drawing.Font ("Calibri", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.label_timerPeriodValue.Location = new System.Drawing.Point (1025, 425);
+			this.label_timerPeriodValue.Location = new System.Drawing.Point (1025, 375);
 			this.label_timerPeriodValue.Name = "label_timerPeriodValue";
 			this.label_timerPeriodValue.Text =  "? seconds";
 
+
+			// 
+			// progressBar_timerPeriod
+			// 
+			this.progressBar_timerPeriod.Location = new System.Drawing.Point(840, 420);
+			this.progressBar_timerPeriod.Name = "progressBar_timerPeriod";
+			this.progressBar_timerPeriod.Size = new System.Drawing.Size(250, 10);
+			this.progressBar_timerPeriod.TabIndex = 5;
+
+			//
+			// progressBarTimerPeriod_label
+			//
+			this.label_progressBarTimerPeriod.AutoSize = true;
+			this.label_progressBarTimerPeriod.Font = new System.Drawing.Font ("Calibri", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this.label_progressBarTimerPeriod.Location = new System.Drawing.Point (840, 400);
+			this.label_progressBarTimerPeriod.Name = "label_progressBarTimerPeriod";
+			this.label_progressBarTimerPeriod.Text =  "Progress for next transfer";
 
 			//
 			//automodeStatus label
 			//
 			this.label_automodeStatus.AutoSize = true;
 			this.label_automodeStatus.Font = new System.Drawing.Font ("Calibri", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.label_automodeStatus.Location = new System.Drawing.Point (840, 400);
+			this.label_automodeStatus.Location = new System.Drawing.Point (840, 350);
 			this.label_automodeStatus.Name = "label_automodeStatus";
 			this.label_automodeStatus.Text = "Current AutoMode Status :";
 
@@ -360,7 +319,7 @@
 			//
 			this.label_automodeStatusValue.AutoSize = true;
 			this.label_automodeStatusValue.Font = new System.Drawing.Font ("Calibri", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.label_automodeStatusValue.Location = new System.Drawing.Point (1025, 400);
+			this.label_automodeStatusValue.Location = new System.Drawing.Point (1025, 350);
 			this.label_automodeStatusValue.Name = "label_automodeStatusValue";
 			this.label_automodeStatusValue.Text =  "OFF";
 
@@ -370,7 +329,7 @@
 			//
 			this.label_rfSignalCheck.AutoSize = true;
 			this.label_rfSignalCheck.Font = new System.Drawing.Font ("Calibri", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.label_rfSignalCheck.Location = new System.Drawing.Point (840, 375);
+			this.label_rfSignalCheck.Location = new System.Drawing.Point (840, 325);
 			this.label_rfSignalCheck.Name = "label_signalCheck";
 			this.label_rfSignalCheck.Text = "Current signal status :";
 
@@ -379,7 +338,7 @@
 			//
 			this.label_rfSignalCheckValue.AutoSize = true;
 			this.label_rfSignalCheckValue.Font = new System.Drawing.Font ("Calibri", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.label_rfSignalCheckValue.Location = new System.Drawing.Point (1025, 375);
+			this.label_rfSignalCheckValue.Location = new System.Drawing.Point (1025, 325);
 			this.label_rfSignalCheckValue.Name = "label_signalCheckValue";
 			this.label_rfSignalCheckValue.Text = "RSSI : ? SNR : ?";
 
@@ -389,7 +348,7 @@
 			//
 			this.label_networkJoin.AutoSize = true;
 			this.label_networkJoin.Font = new System.Drawing.Font ("Calibri", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.label_networkJoin.Location = new System.Drawing.Point (840, 350);
+			this.label_networkJoin.Location = new System.Drawing.Point (840, 300);
 			this.label_networkJoin.Name = "label_networkJoin";
 			this.label_networkJoin.Text = "Current network status :";
 
@@ -398,11 +357,33 @@
 			//
 			this.label_networkJoinValue.AutoSize = true;
 			this.label_networkJoinValue.Font = new System.Drawing.Font ("Calibri", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.label_networkJoinValue.Location = new System.Drawing.Point (1025, 350);
+			this.label_networkJoinValue.Location = new System.Drawing.Point (1025, 300);
 			this.label_networkJoinValue.Name = "label_networkJoinValue";
 			this.label_networkJoinValue.Text = "Disconnected";
 
+			//
+			//lastData label
+			//
+			this.label_lastData.AutoSize = true;
+			this.label_lastData.Font = new System.Drawing.Font ("Calibri", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this.label_lastData.Location = new System.Drawing.Point (840, 450);
+			this.label_lastData.Name = "label_lastData";
+			this.label_lastData.Text = "Last data sent was :";
 
+
+			//
+			//lastDataValue label
+			//
+			this.label_lastDataValue.AutoSize = true;
+			this.label_lastDataValue.Font = new System.Drawing.Font ("Calibri", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this.label_lastDataValue.Location = new System.Drawing.Point (840, 470);
+			this.label_lastDataValue.Name = "label_lastDataValue";
+			this.label_lastDataValue.Text = "{ ?? : ?? }";
+
+
+			//
+			//TODO ADD DATA TRANSFER STATISTICS
+			//
 
 			// 
             // Form1
@@ -426,6 +407,8 @@
 
 			this.Controls.Add (this.label_timerPeriod);
 			this.Controls.Add (this.label_timerPeriodValue);
+			this.Controls.Add (this.progressBar_timerPeriod);
+			this.Controls.Add (this.label_progressBarTimerPeriod);
 
 			this.Controls.Add (this.label_automodeStatus);
 			this.Controls.Add (this.label_automodeStatusValue);
@@ -436,9 +419,14 @@
 			this.Controls.Add (this.label_rfSignalCheck);
 			this.Controls.Add (this.label_rfSignalCheckValue);
 
+
+			this.Controls.Add (this.label_lastData);
+			this.Controls.Add (this.label_lastDataValue);
+
             this.Name = "Form1";
-            this.Text = "Blutech LoRa Tool";
-            this.Load += new System.EventHandler(this.Form1_Load);
+            this.Text = "BluTech Device Control Tool";
+			this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
+			//this.Load += new System.EventHandler(this.Form1_Load);
             this.groupBox_send.ResumeLayout(false);
             this.groupBox_send.PerformLayout();
             this.groupBox_receive.ResumeLayout(false);
@@ -456,3 +444,78 @@
     }
 }
 
+
+
+
+
+
+
+
+/**
+ * DEPRECATED
+ *
+// 
+// button_signalCheck
+// 
+this.button_signalCheck.Enabled = false;
+this.button_signalCheck.Font = new System.Drawing.Font("Calibri", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+this.button_signalCheck.Location = new System.Drawing.Point(960, 100);
+this.button_signalCheck.Name = "button1";
+this.button_signalCheck.Size = new System.Drawing.Size(100, 40);
+this.button_signalCheck.TabIndex = 0;
+this.button_signalCheck.Text = "Signal Check";
+this.button_signalCheck.UseVisualStyleBackColor = true;
+this.button_signalCheck.Click += new System.EventHandler(this.button_signalCheck_Click);
+
+
+// 
+// radioButton1
+// 
+this.radioButton1.AutoSize = true;
+this.radioButton1.Font = new System.Drawing.Font("Calibri", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+this.radioButton1.Location = new System.Drawing.Point(9, 14);
+this.radioButton1.Name = "radioButton1";
+this.radioButton1.Size = new System.Drawing.Size(60, 23);
+this.radioButton1.TabIndex = 13;
+this.radioButton1.TabStop = true;
+this.radioButton1.Text = "ASCII";
+this.radioButton1.UseVisualStyleBackColor = true;
+// 
+// radioButton2
+// 
+this.radioButton2.AutoSize = true;
+this.radioButton2.Font = new System.Drawing.Font("Calibri", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+this.radioButton2.Location = new System.Drawing.Point(79, 14);
+this.radioButton2.Name = "radioButton2";
+this.radioButton2.Size = new System.Drawing.Size(53, 23);
+this.radioButton2.TabIndex = 14;
+this.radioButton2.TabStop = true;
+this.radioButton2.Text = "HEX";
+this.radioButton2.UseVisualStyleBackColor = true;
+// 
+// button_sendData
+// 
+this.button_sendData.Enabled = false;
+this.button_sendData.Font = new System.Drawing.Font("Calibri", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+this.button_sendData.Location = new System.Drawing.Point(960, 20);
+this.button_sendData.Name = "button6";
+this.button_sendData.Size = new System.Drawing.Size(100, 40);
+this.button_sendData.TabIndex = 14;
+this.button_sendData.Text = "Send Data";
+this.button_sendData.UseVisualStyleBackColor = true;
+this.button_sendData.Click += new System.EventHandler(this.button_sendData_Click);
+// 
+// button_networkJoin
+// 
+this.button_networkJoin.Enabled = false;
+this.button_networkJoin.Font = new System.Drawing.Font("Calibri", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+this.button_networkJoin.Location = new System.Drawing.Point(960, 160);
+this.button_networkJoin.Name = "button5";
+this.button_networkJoin.Size = new System.Drawing.Size(100, 40);
+this.button_networkJoin.TabIndex = 13;
+this.button_networkJoin.Text = "Network Join";
+this.button_networkJoin.UseVisualStyleBackColor = true;
+this.button_networkJoin.Click += new System.EventHandler(this.button_networkJoin_Click);
+
+
+*/
