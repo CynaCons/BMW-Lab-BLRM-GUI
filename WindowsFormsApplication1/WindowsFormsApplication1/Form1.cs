@@ -263,7 +263,7 @@ namespace WindowsFormsApplication1
 							break;	
 						case 5: //RF signal check answer was received
 							d = new Delegate (UpdateSignalStatus);
-							tmp = String.Format ("RSSI : {0}", rxBuffer.Substring (subStringIndex));
+							tmp = String.Format ("RSSI: {0}", rxBuffer.Substring (subStringIndex));
 							this.Invoke (d, tmp);
 							break;
 						case 11:
